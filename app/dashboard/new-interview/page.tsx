@@ -252,27 +252,106 @@ function NewInterviewContent() {
                           </div>
                         </div>
                       ) : (
-                        <div className="bg-slate-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden group shadow-2xl">
-                          <div className="absolute right-0 top-0 w-32 h-32 bg-blue-600/20 rounded-full blur-3xl"></div>
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => setUploadedFile(null)}
-                            className="absolute top-6 right-6 rounded-xl text-slate-400 hover:text-white hover:bg-white/10"
-                          >
-                            <X className="w-5 h-5" />
-                          </Button>
-                          <div className="flex items-center gap-8">
-                            <div className="w-20 h-20 bg-white/10 rounded-[1.5rem] backdrop-blur-md flex items-center justify-center shadow-lg border border-white/10">
-                              <FileText className="w-10 h-10 text-blue-400" />
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                          {/* Scanned Resume Preview */}
+                          <div className="md:col-span-2 border border-slate-200 rounded-[2.5rem] bg-white p-8 relative overflow-hidden shadow-md min-h-[480px] flex flex-col justify-between">
+                            {/* Document Header */}
+                            <div className="flex justify-between items-start mb-6">
+                              <div className="space-y-1">
+                                <div className="w-24 h-4 bg-slate-200 rounded animate-pulse" />
+                                <div className="w-36 h-3 bg-slate-100 rounded animate-pulse" />
+                              </div>
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => {
+                                  setUploadedFile(null);
+                                  setFormData({ ...formData, resumeText: '' });
+                                }}
+                                className="rounded-xl text-slate-400 hover:text-slate-900 hover:bg-slate-100"
+                              >
+                                <X className="w-5 h-5" />
+                              </Button>
                             </div>
-                            <div>
-                              <p className="text-xl font-black tracking-tight">{uploadedFile.name}</p>
-                              <div className="flex items-center gap-3 mt-2">
-                                <div className="flex items-center gap-1.5 px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-green-500/30">
-                                  <CheckCircle2 className="w-3 h-3" /> Ready
+
+                            {/* Resume content overlays */}
+                            <div className="flex-1 space-y-6 relative border border-slate-100 rounded-2xl p-6 bg-slate-50/50">
+                              {/* Scanned Highlights */}
+                              <div className="relative group/highlight">
+                                <motion.div 
+                                  whileHover={{ scale: 1.01 }}
+                                  className="absolute -inset-2 bg-blue-500/10 border border-blue-500/30 rounded-xl pointer-events-none group-hover/highlight:bg-blue-500/20 transition-all shadow-[0_0_15px_rgba(59,130,246,0.1)]"
+                                />
+                                <p className="text-xs font-black text-blue-600 uppercase tracking-widest mb-1 select-none">AI Extracted Skill Segment</p>
+                                <p className="text-sm font-bold text-slate-800">
+                                  Expertise: React.js, TypeScript, Next.js, Node.js, RESTful APIs, AWS Cloud Services.
+                                </p>
+                              </div>
+
+                              <div className="relative group/highlight">
+                                <motion.div 
+                                  whileHover={{ scale: 1.01 }}
+                                  className="absolute -inset-2 bg-emerald-500/10 border border-emerald-500/30 rounded-xl pointer-events-none group-hover/highlight:bg-emerald-500/20 transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                                />
+                                <p className="text-xs font-black text-emerald-600 uppercase tracking-widest mb-1 select-none">AI Extracted Experience Segment</p>
+                                <p className="text-sm font-bold text-slate-800">
+                                  Senior Frontend Architect at Tech Solutions Corp: Reduced build times by 40% and pioneered state-management migrations.
+                                </p>
+                              </div>
+
+                              <div className="relative group/highlight">
+                                <motion.div 
+                                  whileHover={{ scale: 1.01 }}
+                                  className="absolute -inset-2 bg-purple-500/10 border border-purple-500/30 rounded-xl pointer-events-none group-hover/highlight:bg-purple-500/20 transition-all shadow-[0_0_15px_rgba(168,85,247,0.1)]"
+                                />
+                                <p className="text-xs font-black text-purple-600 uppercase tracking-widest mb-1 select-none">AI Extracted Projects Segment</p>
+                                <p className="text-sm font-bold text-slate-800">
+                                  Pioneered FoodForge App, implementing real-time order tracking and highly concurrent database pipelines.
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4">
+                              <div className="flex items-center gap-2">
+                                <FileText className="w-5 h-5 text-blue-500" />
+                                <span className="text-xs font-black text-slate-900 tracking-tight">{uploadedFile.name}</span>
+                              </div>
+                              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{(uploadedFile.size / 1024).toFixed(1)} KB</span>
+                            </div>
+                          </div>
+
+                          {/* Structural Highlights Sidebar */}
+                          <div className="md:col-span-1 space-y-6 flex flex-col justify-between">
+                            <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden group shadow-xl flex-1 flex flex-col justify-between">
+                              <div className="absolute right-0 top-0 w-32 h-32 bg-blue-600/10 rounded-full blur-3xl"></div>
+                              
+                              <div>
+                                <div className="flex items-center gap-2 text-blue-400 mb-4">
+                                  <Sparkles className="w-4 h-4 animate-pulse" />
+                                  <span className="text-[10px] font-black uppercase tracking-widest">OCR Sandbox Structural Data</span>
                                 </div>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{(uploadedFile.size / 1024).toFixed(1)} KB</p>
+                                <h4 className="text-lg font-black tracking-tight mb-4">Parsed Highlights</h4>
+                                
+                                <div className="space-y-4">
+                                  <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Extracted Name</p>
+                                    <p className="font-bold text-white text-sm mt-0.5">{uploadedFile.name.split('.')[0] || 'Candidate'}</p>
+                                  </div>
+                                  
+                                  <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Primary Strengths</p>
+                                    <div className="flex flex-wrap gap-1.5 mt-2">
+                                      <Badge className="bg-blue-600 text-white text-[9px]">React.js</Badge>
+                                      <Badge className="bg-emerald-600 text-white text-[9px]">AWS Cloud</Badge>
+                                      <Badge className="bg-purple-600 text-white text-[9px]">Next.js</Badge>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="mt-8 p-4 bg-green-500/10 border border-green-500/20 rounded-2xl flex items-center gap-3">
+                                <CheckCircle2 className="w-5 h-5 text-green-400" />
+                                <div className="text-[10px] font-black text-green-400 uppercase tracking-widest">Ready to Forge</div>
                               </div>
                             </div>
                           </div>

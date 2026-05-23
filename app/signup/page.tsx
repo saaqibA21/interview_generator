@@ -5,6 +5,7 @@ import { Sparkles, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -13,7 +14,7 @@ export default function SignupPage() {
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
     if (!role) return;
-    // Store role in session/cookie or pass to API
+    Cookies.set('user-role', role, { expires: 7 });
     router.push('/dashboard');
   };
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
@@ -19,6 +20,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useSession, signOut } from 'next-auth/react';
 import { motion } from 'framer-motion';
+import Cookies from 'js-cookie';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard', roles: ['interviewer', 'applicant'] },
@@ -35,6 +37,17 @@ const menuItems = [
 export function AppSidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const [userRole, setUserRole] = useState<'interviewer' | 'applicant'>('interviewer');
+
+  useEffect(() => {
+    const role = Cookies.get('user-role') as 'interviewer' | 'applicant';
+    if (role) {
+      setUserRole(role);
+    } else if (session?.user) {
+      const serverRole = (session.user as any).role || 'interviewer';
+      setUserRole(serverRole);
+    }
+  }, [session]);
 
   return (
     <div className="w-64 h-screen bg-[#0f172a] text-slate-300 flex flex-col border-r border-slate-800/50 sticky top-0 z-50">
@@ -52,7 +65,6 @@ export function AppSidebar() {
 
       <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scrollbar">
         {menuItems.filter(item => {
-          const userRole = (session?.user as any)?.role || 'interviewer';
           return item.roles.includes(userRole);
         }).map((item) => {
           const isActive = pathname === item.href;

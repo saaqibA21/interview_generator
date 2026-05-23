@@ -1,16 +1,20 @@
 "use client";
 
+import { useState } from 'react';
 import { Sparkles, ArrowRight, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
+import Cookies from 'js-cookie';
+import { cn } from '@/lib/utils';
 
 export default function LoginPage() {
   const router = useRouter();
+  const [role, setRole] = useState<'interviewer' | 'applicant'>('interviewer');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // For now, redirect to dashboard or use credentials if implemented
+    Cookies.set('user-role', role, { expires: 7 });
     router.push('/dashboard');
   };
 
@@ -30,6 +34,33 @@ export default function LoginPage() {
 
         <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-xl shadow-slate-200/50">
           <form onSubmit={handleLogin} className="space-y-6">
+            <div className="flex bg-slate-100 p-1.5 rounded-2xl mb-6">
+              <button
+                type="button"
+                onClick={() => setRole('interviewer')}
+                className={cn(
+                  "flex-1 py-3 text-xs font-black uppercase tracking-widest rounded-xl transition-all",
+                  role === 'interviewer' 
+                    ? "bg-slate-900 text-white shadow-md" 
+                    : "text-slate-400 hover:text-slate-700"
+                )}
+              >
+                Interviewer
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole('applicant')}
+                className={cn(
+                  "flex-1 py-3 text-xs font-black uppercase tracking-widest rounded-xl transition-all",
+                  role === 'applicant' 
+                    ? "bg-blue-600 text-white shadow-md" 
+                    : "text-slate-400 hover:text-slate-700"
+                )}
+              >
+                Applicant
+              </button>
+            </div>
+
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-700 ml-1">Email Address</label>
               <div className="relative">
