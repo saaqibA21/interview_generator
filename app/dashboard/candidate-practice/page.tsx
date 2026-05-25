@@ -116,6 +116,8 @@ export default function CandidatePracticePage() {
   const [playgroundCode, setPlaygroundCode] = useState(languageTemplates.javascript);
   const [isGradingCode, setIsGradingCode] = useState(false);
   const [gradedCodeResult, setGradedCodeResult] = useState<any>(null);
+  const [sharedOnLinkedIn, setSharedOnLinkedIn] = useState(false);
+  const [showBadgeOverlay, setShowBadgeOverlay] = useState(false);
 
   const gradePlaygroundCode = async () => {
     setIsGradingCode(true);
@@ -417,18 +419,64 @@ export default function CandidatePracticePage() {
                         key="roadmap-tab"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
+        exit={{ opacity: 0, y: -10 }}
                         className="space-y-6"
                       >
-                        <div className="flex items-center justify-between">
-                           <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3">
-                              <BookOpen className="w-6 h-6 text-blue-600" />
-                              30-Day Upskilling Plan
-                           </h3>
-                           <Badge variant="success">Milestones Mapped</Badge>
-                        </div>
+                         <div className="flex items-center justify-between">
+                            <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+                               <BookOpen className="w-6 h-6 text-blue-600" />
+                               30-Day Upskilling Plan
+                            </h3>
+                            <Badge variant="success">Milestones Mapped</Badge>
+                         </div>
 
-                        <div className="grid grid-cols-1 gap-6">
+                         {/* Certified Achievement Card */}
+                         <Card className="relative overflow-hidden border-2 border-indigo-500 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-8 text-white shadow-2xl rounded-[2rem] animate-in fade-in zoom-in duration-500">
+                           <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl" />
+                           <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
+                             {/* Glowing dynamic SVG badge icon */}
+                             <div className="w-24 h-24 relative shrink-0">
+                               <div className="absolute inset-0 bg-indigo-500 rounded-2xl rotate-6 animate-pulse opacity-50 blur-sm" />
+                               <div className="absolute inset-0 bg-gradient-to-br from-indigo-400 to-purple-600 rounded-2xl flex flex-col items-center justify-center border border-indigo-300 shadow-lg p-2 text-center">
+                                 <Sparkles className="w-7 h-7 text-yellow-300 animate-bounce mb-1" />
+                                 <span className="text-[8px] font-black tracking-widest text-indigo-100 uppercase">Complexity</span>
+                                 <span className="text-[10px] font-black text-white uppercase tracking-tight">O(N) Master</span>
+                               </div>
+                             </div>
+                             
+                             <div className="flex-1 text-center md:text-left space-y-2">
+                               <div className="flex items-center justify-center md:justify-start gap-2">
+                                 <span className="bg-indigo-500 text-white font-black text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Shareable Certificate</span>
+                                 <span className="text-[10px] font-black uppercase text-indigo-400 tracking-widest">Syllabus Completion</span>
+                               </div>
+                               <h4 className="text-xl font-black tracking-tight leading-tight">Mastery Certification Earned!</h4>
+                               <p className="text-indigo-200/80 text-xs font-medium">You completed the algorithmic complexity syllabus and achieved optimized linear space/time structures.</p>
+                             </div>
+                             
+                             <div className="shrink-0 flex flex-col sm:flex-row gap-3">
+                               <Button 
+                                 type="button"
+                                 variant="outline" 
+                                 onClick={() => setShowBadgeOverlay(true)}
+                                 className="bg-transparent border-indigo-400/50 hover:bg-indigo-950 text-white rounded-xl text-xs font-bold"
+                               >
+                                 Preview Badge
+                               </Button>
+                               <Button 
+                                 type="button"
+                                 onClick={() => {
+                                   setSharedOnLinkedIn(true);
+                                   alert("Simulating LinkedIn OAuth... Credential shared to your profile feed successfully!");
+                                 }}
+                                 className="bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-xs font-black shadow-lg shadow-indigo-500/20"
+                               >
+                                 {sharedOnLinkedIn ? "Shared to Profile ✓" : "Share to LinkedIn"}
+                               </Button>
+                             </div>
+                           </div>
+                         </Card>
+
+                         <div className="grid grid-cols-1 gap-6">
                           {[
                             {
                               phase: "Milestone 1 (Day 1-7)",
@@ -847,6 +895,66 @@ export default function CandidatePracticePage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+         {/* LinkedIn Achievement Modal Overlay */}
+         <AnimatePresence>
+           {showBadgeOverlay && (
+             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+               <motion.div 
+                 initial={{ scale: 0.95, opacity: 0 }}
+                 animate={{ scale: 1, opacity: 1 }}
+                 exit={{ scale: 0.95, opacity: 0 }}
+                 className="bg-slate-950 border border-slate-800 p-8 rounded-[2.5rem] max-w-lg w-full relative overflow-hidden shadow-2xl text-white text-center space-y-6"
+               >
+                 <button 
+                   type="button"
+                   onClick={() => setShowBadgeOverlay(false)} 
+                   className="absolute top-6 right-6 p-2 text-slate-400 hover:text-white rounded-full bg-slate-900 hover:bg-slate-800 transition-colors"
+                 >
+                   <X className="w-4 h-4" />
+                 </button>
+                 
+                 {/* Certificate layout */}
+                 <div className="border-2 border-dashed border-indigo-500/30 rounded-[2rem] p-6 bg-slate-900/40 relative">
+                   <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent pointer-events-none" />
+                   <h3 className="text-sm font-black uppercase text-indigo-400 tracking-widest mb-1">InterviewForge AI Certification</h3>
+                   <h2 className="text-2xl font-black mb-4">Algorithm & Systems Master</h2>
+                   <p className="text-[10px] text-slate-400 uppercase tracking-widest font-black">Awarded To</p>
+                   <p className="text-lg font-bold text-white mb-4">Saaqib Analyst</p>
+                   <p className="text-xs text-slate-300 font-medium px-4 mb-6 leading-relaxed">
+                     For demonstrating master-level competency in Big-O optimization, distributed concurrency caching mechanisms, and system design integrity.
+                   </p>
+                   <div className="flex justify-between items-center text-[9px] text-slate-500 font-black uppercase tracking-wider border-t border-slate-800 pt-4">
+                     <span>Verified ID: IF-942-88X</span>
+                     <span>Date: May 2026</span>
+                   </div>
+                 </div>
+                 
+                 <div className="flex justify-center gap-4">
+                   <Button 
+                     type="button"
+                     variant="outline" 
+                     onClick={() => setShowBadgeOverlay(false)}
+                     className="border-slate-800 text-slate-300 bg-transparent rounded-xl"
+                   >
+                     Close Preview
+                   </Button>
+                   <Button 
+                     type="button"
+                     onClick={() => {
+                       setSharedOnLinkedIn(true);
+                       setShowBadgeOverlay(false);
+                       alert("Simulating LinkedIn OAuth... Shared successfully to your profile!");
+                     }}
+                     className="bg-indigo-500 text-white rounded-xl"
+                   >
+                     Post to LinkedIn Feed
+                   </Button>
+                 </div>
+               </motion.div>
+             </div>
+           )}
+         </AnimatePresence>
       </main>
     </div>
   );

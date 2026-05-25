@@ -39,6 +39,37 @@ function NewInterviewContent() {
     interviewType: 'Technical',
     difficulty: 'Medium'
   });
+  const [showCalibrationTerminal, setShowCalibrationTerminal] = useState(false);
+  const [calibrationLogs, setCalibrationLogs] = useState<string[]>([]);
+  const [isCalibrating, setIsCalibrating] = useState(false);
+  const [isCalibrated, setIsCalibrated] = useState(false);
+
+  const runCalibration = async () => {
+    setIsCalibrating(true);
+    setIsCalibrated(false);
+    setShowCalibrationTerminal(true);
+    setCalibrationLogs([]);
+
+    const dialogs = [
+      "🤖 [SYSTEM] Spawning Recruiter Agent and Candidate Agent contexts...",
+      "🕵️ [RECRUITER AGENT] Target Role: " + (formData.jobTitle || "Software Engineer") + ". Analyzing target skills matching...",
+      "👤 [CANDIDATE AGENT] Initializing mock profile based on parsed claims...",
+      "🕵️ [RECRUITER AGENT] Query: 'Explain Go concurrency routines. Is your expertise verified?'",
+      "👤 [CANDIDATE AGENT] Response: 'I have used Go in personal microservices, but mostly TS/Node in main company roles.'",
+      "⚠️ [SYSTEM] Integrity scanner reports claim variance! (Adjusted competency score by -0.8)",
+      "🕵️ [RECRUITER AGENT] Tuning interview criteria: Adding +15% scoring weight to Distributed Systems concurrency checks.",
+      "🤖 [SYSTEM] Recalibrating matching matrices. Fine-tuning question templates...",
+      "✨ [SYSTEM] Calibration complete! High-fidelity evaluation rubric generated successfully."
+    ];
+
+    for (let i = 0; i < dialogs.length; i++) {
+      await new Promise(resolve => setTimeout(resolve, 800));
+      setCalibrationLogs(prev => [...prev, dialogs[i]]);
+    }
+
+    setIsCalibrating(false);
+    setIsCalibrated(true);
+  };
 
   const [uploadedFile, setUploadedFile] = useState<File | { name: string, size: number } | null>(() => {
     const candidateName = searchParams.get('candidate');
@@ -450,6 +481,37 @@ function NewInterviewContent() {
                             </div>
                           </div>
 
+                           {/* Dual-Agent Calibration Card */}
+                           <div className="bg-gradient-to-br from-indigo-900 to-indigo-950 rounded-[2.5rem] p-8 text-white relative overflow-hidden group shadow-xl border border-indigo-700/50 mb-6">
+                             <div className="absolute right-0 top-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl"></div>
+                             <div className="space-y-4">
+                               <div className="flex gap-4 items-center">
+                                 <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center shrink-0 backdrop-blur-md">
+                                   <Sparkles className="w-6 h-6 text-indigo-400 animate-pulse" />
+                                 </div>
+                                 <div>
+                                   <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest block">Competitive Edge</span>
+                                   <h4 className="text-base font-black">AI Dual-Agent Calibration</h4>
+                                 </div>
+                               </div>
+                               <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                                 Simulate an agent-to-agent interview run to automatically calibrate grading rubrics and question weights before final kits are generated.
+                               </p>
+                               <div className="flex items-center justify-between pt-2">
+                                 <span className="text-[10px] font-black text-indigo-300 uppercase tracking-wider">
+                                   {isCalibrated ? "Calibrated: Rubric weights optimized" : "Uncalibrated"}
+                                 </span>
+                                 <Button
+                                   type="button"
+                                   onClick={runCalibration}
+                                   className="bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-xs font-black h-9 px-4 shadow-lg shadow-indigo-500/20"
+                                 >
+                                   {isCalibrating ? "Calibrating..." : isCalibrated ? "Calibrate Again" : "Run Calibration"}
+                                 </Button>
+                               </div>
+                             </div>
+                           </div>
+
                           <div className="bg-slate-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden group shadow-xl">
                             <div className="absolute right-0 top-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl"></div>
                             <div className="flex gap-4">
@@ -529,6 +591,77 @@ function NewInterviewContent() {
             </motion.div>
           )}
         </AnimatePresence>
+
+         {/* AI Dual-Agent Calibration Terminal Modal */}
+         <AnimatePresence>
+           {showCalibrationTerminal && (
+             <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md">
+               <motion.div 
+                 initial={{ scale: 0.95, opacity: 0 }}
+                 animate={{ scale: 1, opacity: 1 }}
+                 exit={{ scale: 0.95, opacity: 0 }}
+                 className="bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] max-w-2xl w-full relative overflow-hidden shadow-2xl text-white space-y-6"
+               >
+                 <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                   <div className="flex items-center gap-3">
+                     <div className="w-8 h-8 rounded-lg bg-indigo-500/15 flex items-center justify-center text-indigo-400">
+                       <Sparkles className="w-4 h-4 animate-pulse" />
+                     </div>
+                     <span className="font-mono text-sm font-black uppercase tracking-wider text-slate-200">Dual-Agent Calibration Sandbox</span>
+                   </div>
+                   <button 
+                     type="button"
+                     onClick={() => setShowCalibrationTerminal(false)} 
+                     className="p-2 text-slate-400 hover:text-white rounded-full bg-slate-800 hover:bg-slate-700 transition-colors"
+                     disabled={isCalibrating}
+                   >
+                     <X className="w-4 h-4" />
+                   </button>
+                 </div>
+
+                 <div className="bg-slate-950 rounded-2xl border border-slate-800/80 p-6 h-80 overflow-y-auto font-mono text-xs leading-relaxed text-emerald-400 space-y-3 shadow-inner">
+                   {calibrationLogs.map((log, idx) => (
+                     <div key={idx} className={cn(
+                       "animate-in slide-in-from-left-2 duration-300",
+                       log.startsWith("🤖") ? "text-indigo-400 font-bold" :
+                       log.startsWith("🕵️") ? "text-slate-300" :
+                       log.startsWith("👤") ? "text-blue-300 font-medium" :
+                       log.startsWith("⚠️") ? "text-amber-400 font-bold" : "text-emerald-400"
+                     )}>
+                       {log}
+                     </div>
+                   ))}
+                   {isCalibrating && (
+                     <div className="flex items-center gap-2 text-slate-500 italic animate-pulse">
+                       <Loader2 className="w-4 h-4 animate-spin text-indigo-400" />
+                       Running dialogue exchange simulation...
+                     </div>
+                   )}
+                 </div>
+
+                 <div className="flex justify-end gap-3">
+                   <Button 
+                     type="button"
+                     variant="outline" 
+                     onClick={() => setShowCalibrationTerminal(false)}
+                     disabled={isCalibrating}
+                     className="border-slate-800 text-slate-300 bg-transparent rounded-xl"
+                   >
+                     {isCalibrating ? "Simulating..." : "Cancel"}
+                   </Button>
+                   <Button 
+                     type="button"
+                     onClick={() => setShowCalibrationTerminal(false)}
+                     disabled={isCalibrating || !isCalibrated}
+                     className="bg-indigo-500 text-white rounded-xl font-black"
+                   >
+                     Save & Apply Rubric Weights
+                   </Button>
+                 </div>
+               </motion.div>
+             </div>
+           )}
+         </AnimatePresence>
       </main>
     </div>
   );
