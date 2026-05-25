@@ -215,6 +215,16 @@ export default function ResumeVerifierPage() {
                              Calculated based on technical internal consistency, role-seniority alignment, and industry-standard benchmark metrics.
                            </p>
                         </div>
+                        <div className="grid grid-cols-2 gap-4 mt-6">
+                           <div className="p-5 bg-white/5 rounded-3xl border border-white/10 text-center">
+                             <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Inconsistency</p>
+                             <p className="text-xl font-black text-red-400 mt-1">12%</p>
+                           </div>
+                           <div className="p-5 bg-white/5 rounded-3xl border border-white/10 text-center">
+                             <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Vague Claims</p>
+                             <p className="text-xl font-black text-amber-400 mt-1">1 detected</p>
+                           </div>
+                        </div>
                       </div>
                    </Card>
 

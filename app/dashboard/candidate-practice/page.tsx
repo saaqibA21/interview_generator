@@ -57,6 +57,51 @@ const mockQuestions = [
   }
 ];
 
+const languageTemplates: Record<string, string> = {
+  javascript: `// Task: Write a function to check if a string is a palindrome.
+// Constraint: Should run in O(N) time and O(1) space.
+function isPalindrome(str) {
+  const cleanStr = str.toLowerCase().replace(/[^a-z0-9]/g, '');
+  let left = 0;
+  let right = cleanStr.length - 1;
+  
+  while (left < right) {
+    if (cleanStr[left] !== cleanStr[right]) {
+      return false;
+    }
+    left++;
+    right--;
+  }
+  return true;
+}`,
+  go: `// Task: Write a function to reverse an integer slice in-place.
+// Constraint: Should run in O(N) time and O(1) space.
+package main
+
+func reverseSlice(arr []int) []int {
+    left := 0
+    right := len(arr) - 1
+    
+    for left < right {
+        arr[left], arr[right] = arr[right], arr[left]
+        left++
+        right--
+    }
+    return arr
+}`,
+  python: `# Task: Write a function to find the maximum subarray sum (Kadane's Algorithm).
+# Constraint: Should run in O(N) time and O(1) space.
+def max_subarray_sum(arr):
+    max_so_far = arr[0]
+    curr_max = arr[0]
+    
+    for i in range(1, len(arr)):
+        curr_max = max(arr[i], curr_max + arr[i])
+        max_so_far = max(max_so_far, curr_max)
+        
+    return max_so_far`
+};
+
 export default function CandidatePracticePage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showPractice, setShowPractice] = useState(false);
@@ -65,6 +110,31 @@ export default function CandidatePracticePage() {
   const [transcript, setTranscript] = useState('');
   const [isAnalyzingAnswer, setIsAnalyzingAnswer] = useState(false);
   const [practiceResult, setPracticeResult] = useState<any>(null);
+
+  const [practiceTab, setPracticeTab] = useState<'questions' | 'roadmap' | 'playground'>('questions');
+  const [playgroundLanguage, setPlaygroundLanguage] = useState('javascript');
+  const [playgroundCode, setPlaygroundCode] = useState(languageTemplates.javascript);
+  const [isGradingCode, setIsGradingCode] = useState(false);
+  const [gradedCodeResult, setGradedCodeResult] = useState<any>(null);
+
+  const gradePlaygroundCode = async () => {
+    setIsGradingCode(true);
+    setGradedCodeResult(null);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setGradedCodeResult({
+        timeComplexity: "O(N)",
+        spaceComplexity: "O(1)",
+        correctness: "9/10",
+        feedback: "Excellent! Your solution runs in optimal linear time and performs manipulations in-place. It correctly handles boundary limits, pointer operations and empty constraints.",
+        optimizationTip: "Consider writing test cases explicitly to cover single-element slices and negative integer values."
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsGradingCode(false);
+    }
+  };
 
   const handleStartAnalysis = () => {
     setIsAnalyzing(true);
@@ -253,49 +323,277 @@ export default function CandidatePracticePage() {
                   </Card>
                </div>
 
-               {/* Practice Questions */}
+               {/* Practice Interactive Console Tabs */}
                <div className="lg:col-span-2 space-y-6">
-                  <div className="flex items-center justify-between">
-                     <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3">
-                        <MessageSquare className="w-6 h-6 text-blue-600" />
-                        Your Practice Kit
-                     </h3>
-                     <Badge variant="info">3 Recommended</Badge>
+                  {/* Tabs Bar */}
+                  <div className="flex bg-slate-100 p-1.5 rounded-[1.75rem] gap-2 w-fit mb-6 shadow-inner">
+                    <button
+                      type="button"
+                      onClick={() => setPracticeTab('questions')}
+                      className={cn(
+                        "px-6 py-3 text-xs font-black uppercase tracking-widest rounded-2xl transition-all",
+                        practiceTab === 'questions' ? "bg-white text-blue-600 shadow-md" : "text-slate-500 hover:text-slate-900"
+                      )}
+                    >
+                      Practice Kit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPracticeTab('roadmap')}
+                      className={cn(
+                        "px-6 py-3 text-xs font-black uppercase tracking-widest rounded-2xl transition-all",
+                        practiceTab === 'roadmap' ? "bg-white text-blue-600 shadow-md" : "text-slate-500 hover:text-slate-900"
+                      )}
+                    >
+                      30-Day Roadmap
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPracticeTab('playground')}
+                      className={cn(
+                        "px-6 py-3 text-xs font-black uppercase tracking-widest rounded-2xl transition-all",
+                        practiceTab === 'playground' ? "bg-white text-blue-600 shadow-md" : "text-slate-500 hover:text-slate-900"
+                      )}
+                    >
+                      Code Playground
+                    </button>
                   </div>
 
-                  {mockQuestions.map((q, i) => (
-                    <Card key={i} className="group hover:border-blue-400 transition-all duration-300">
-                       <CardHeader className="flex flex-row items-start justify-between">
-                          <div className="space-y-2">
-                             <div className="flex gap-2">
-                                <Badge variant="secondary">{q.type}</Badge>
-                                <Badge variant="outline">Difficulty: {q.difficulty}</Badge>
-                             </div>
-                             <CardTitle className="text-xl group-hover:text-blue-600 transition-colors">{q.question}</CardTitle>
-                          </div>
-                       </CardHeader>
-                       <CardContent className="space-y-6">
-                          <div className="p-5 bg-blue-50 rounded-2xl border border-blue-100">
-                             <div className="flex items-center gap-2 text-blue-900 font-black text-[10px] uppercase tracking-widest mb-3">
-                                <Activity className="w-3.5 h-3.5" />
-                                Strategic Answer Framework
-                             </div>
-                             <p className="text-sm text-blue-800 leading-relaxed font-medium">{q.strategy}</p>
-                          </div>
-                          <div className="flex items-center justify-between pt-2 border-t border-slate-50">
-                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Confidence Score: --</p>
-                             <Button 
-                               variant="outline" 
-                               size="sm" 
-                               className="rounded-full"
-                               onClick={() => setActiveQuestion(q)}
+                  <AnimatePresence mode="wait">
+                    {practiceTab === 'questions' && (
+                      <motion.div
+                        key="questions-tab"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="space-y-6"
+                      >
+                        <div className="flex items-center justify-between">
+                           <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+                              <MessageSquare className="w-6 h-6 text-blue-600" />
+                              Your Practice Kit
+                           </h3>
+                           <Badge variant="info">3 Recommended</Badge>
+                        </div>
+
+                        {mockQuestions.map((q, i) => (
+                          <Card key={i} className="group hover:border-blue-400 transition-all duration-300">
+                             <CardHeader className="flex flex-row items-start justify-between">
+                                <div className="space-y-2">
+                                   <div className="flex gap-2">
+                                      <Badge variant="secondary">{q.type}</Badge>
+                                      <Badge variant="outline">Difficulty: {q.difficulty}</Badge>
+                                   </div>
+                                   <CardTitle className="text-xl group-hover:text-blue-600 transition-colors">{q.question}</CardTitle>
+                                </div>
+                             </CardHeader>
+                             <CardContent className="space-y-6">
+                                <div className="p-5 bg-blue-50 rounded-2xl border border-blue-100">
+                                   <div className="flex items-center gap-2 text-blue-900 font-black text-[10px] uppercase tracking-widest mb-3">
+                                      <Activity className="w-3.5 h-3.5" />
+                                      Strategic Answer Framework
+                                   </div>
+                                   <p className="text-sm text-blue-800 leading-relaxed font-medium">{q.strategy}</p>
+                                </div>
+                                <div className="flex items-center justify-between pt-2 border-t border-slate-50">
+                                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Confidence Score: --</p>
+                                   <Button 
+                                     variant="outline" 
+                                     size="sm" 
+                                     className="rounded-full"
+                                     onClick={() => setActiveQuestion(q)}
+                                   >
+                                      Practice Answer <Mic className="w-3.5 h-3.5 ml-2" />
+                                   </Button>
+                                </div>
+                             </CardContent>
+                          </Card>
+                        ))}
+                      </motion.div>
+                    )}
+
+                    {practiceTab === 'roadmap' && (
+                      <motion.div
+                        key="roadmap-tab"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="space-y-6"
+                      >
+                        <div className="flex items-center justify-between">
+                           <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+                              <BookOpen className="w-6 h-6 text-blue-600" />
+                              30-Day Upskilling Plan
+                           </h3>
+                           <Badge variant="success">Milestones Mapped</Badge>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-6">
+                          {[
+                            {
+                              phase: "Milestone 1 (Day 1-7)",
+                              title: "Concurrency Foundations & Cluster Architectures",
+                              desc: "Deep-dive into event loops, asynchronous process clustering (Node.js child_process/worker_threads), and horizontal performance monitoring tools.",
+                              linkedGap: "Distributed Systems",
+                              action: "Build a stateless concurrent microserver"
+                            },
+                            {
+                              phase: "Milestone 2 (Day 8-15)",
+                              title: "Distributed Shared Cache & Redis Concurrency Locks",
+                              desc: "Solve locking issues across server nodes. Study atomic operations, caching mechanisms, and distributed locking algorithms (e.g. Redlock).",
+                              linkedGap: "System Design Depth",
+                              action: "Configure Redis caching & Redlock pipelines"
+                            },
+                            {
+                              phase: "Milestone 3 (Day 16-22)",
+                              title: "High-Throughput Database Sharding & System Scaling",
+                              desc: "Explore write-heavy DB optimization, sharding parameters, horizontal scaling limits, and load balancer traffic algorithms.",
+                              linkedGap: "System Design",
+                              action: "Draft scaled architecture blueprints"
+                            },
+                            {
+                              phase: "Milestone 4 (Day 23-30)",
+                              title: "Go-Lang Concurrency Frameworks & Preemptive Routines",
+                              desc: "Master Go fundamentals including preemptive scheduling, go-channel pipelines, wait-group routines synchronization, and mutex bounds.",
+                              linkedGap: "Go Language Fit",
+                              action: "Solve 5 Go concurrency sandboxes"
+                            }
+                          ].map((milestone, idx) => (
+                            <Card key={idx} className="p-6 relative overflow-hidden group hover:border-blue-400 transition-all duration-300">
+                              <div className="flex gap-6 items-start">
+                                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0 font-black text-sm shadow-inner group-hover:scale-110 transition-transform">
+                                  {idx + 1}
+                                </div>
+                                <div className="space-y-3 flex-1">
+                                  <div className="flex justify-between items-center flex-wrap gap-2">
+                                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{milestone.phase}</span>
+                                    <Badge variant="warning">Resolves: {milestone.linkedGap}</Badge>
+                                  </div>
+                                  <h4 className="text-lg font-black text-slate-900 leading-snug">{milestone.title}</h4>
+                                  <p className="text-slate-500 text-xs leading-relaxed font-medium">{milestone.desc}</p>
+                                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Practical: {milestone.action}</span>
+                                    <Button size="sm" variant="outline" className="h-8 text-[9px] font-black rounded-lg uppercase tracking-wider">Start Lesson</Button>
+                                  </div>
+                                </div>
+                              </div>
+                            </Card>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {practiceTab === 'playground' && (
+                      <motion.div
+                        key="playground-tab"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="space-y-6"
+                      >
+                        <div className="flex items-center justify-between">
+                           <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+                              <Target className="w-6 h-6 text-blue-600" />
+                              AI Code Grader
+                           </h3>
+                           <div className="flex items-center gap-2">
+                             <select
+                               className="bg-white border border-slate-200 rounded-xl px-3 py-1.5 font-bold text-xs outline-none focus:border-blue-500 transition-all text-slate-700 shadow-sm"
+                               value={playgroundLanguage}
+                               onChange={(e) => {
+                                 const lang = e.target.value;
+                                 setPlaygroundLanguage(lang);
+                                 setPlaygroundCode(languageTemplates[lang]);
+                                 setGradedCodeResult(null);
+                               }}
                              >
-                                Practice Answer <Mic className="w-3.5 h-3.5 ml-2" />
-                             </Button>
+                               <option value="javascript">JavaScript</option>
+                               <option value="go">Go (Golang)</option>
+                               <option value="python">Python</option>
+                             </select>
+                           </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+                          {/* Code Editor */}
+                          <div className="xl:col-span-7 space-y-4">
+                            <div className="border border-slate-800 bg-[#0f172a] rounded-[2rem] p-6 shadow-2xl relative overflow-hidden flex flex-col h-[400px]">
+                              <div className="flex items-center gap-2 border-b border-white/5 pb-4 mb-4 select-none">
+                                <div className="w-3 h-3 rounded-full bg-red-500" />
+                                <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                                <div className="w-3 h-3 rounded-full bg-green-500" />
+                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4 font-mono">sandbox_compiler.{playgroundLanguage === 'go' ? 'go' : playgroundLanguage === 'python' ? 'py' : 'js'}</span>
+                              </div>
+                              
+                              <textarea
+                                value={playgroundCode}
+                                onChange={(e) => setPlaygroundCode(e.target.value)}
+                                className="flex-1 bg-transparent text-slate-200 font-mono text-xs leading-relaxed outline-none resize-none"
+                                spellCheck={false}
+                              />
+                            </div>
+                            
+                            <Button
+                              onClick={gradePlaygroundCode}
+                              disabled={isGradingCode || !playgroundCode.trim()}
+                              className="w-full h-14 rounded-2xl font-black bg-blue-600 hover:bg-blue-700 text-white"
+                            >
+                              {isGradingCode ? (
+                                <>
+                                  <Loader2 className="w-5 h-5 mr-3 animate-spin" /> Compiling & Grading Code...
+                                </>
+                              ) : (
+                                <>
+                                  ⚡ Run AI Complexity Analysis
+                                </>
+                              )}
+                            </Button>
                           </div>
-                       </CardContent>
-                    </Card>
-                  ))}
+
+                          {/* Evaluation Grade sidebar */}
+                          <div className="xl:col-span-5">
+                            {!gradedCodeResult ? (
+                              <div className="h-[468px] border-2 border-dashed border-slate-200 rounded-[2.5rem] flex flex-col items-center justify-center p-8 text-center bg-white/50 text-slate-400">
+                                <Activity className="w-12 h-12 text-slate-300 mb-4 animate-pulse" />
+                                <h4 className="font-bold text-slate-500 mb-2">Complexity Grader Idle</h4>
+                                <p className="text-[10px] leading-relaxed max-w-[200px]">Write your solution and trigger AI analysis to see Big-O evaluations.</p>
+                              </div>
+                            ) : (
+                              <Card className="p-6 border-blue-200 shadow-xl shadow-blue-100 bg-white rounded-[2.5rem] space-y-6 h-[468px] overflow-y-auto custom-scrollbar">
+                                <div className="flex items-center justify-between border-b border-slate-50 pb-4">
+                                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">AI Grader Scorecard</span>
+                                  <span className="font-black text-2xl text-blue-600">{gradedCodeResult.correctness}</span>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 text-center rounded-2xl">
+                                    <p className="text-[9px] font-black text-emerald-700 uppercase tracking-widest">Time Complexity</p>
+                                    <p className="text-lg font-black text-emerald-600 mt-1">{gradedCodeResult.timeComplexity}</p>
+                                  </div>
+                                  <div className="p-4 bg-purple-500/10 border border-purple-500/20 text-center rounded-2xl">
+                                    <p className="text-[9px] font-black text-purple-700 uppercase tracking-widest">Space Complexity</p>
+                                    <p className="text-lg font-black text-purple-600 mt-1">{gradedCodeResult.spaceComplexity}</p>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <h5 className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Grading Assessment</h5>
+                                  <p className="text-xs font-bold leading-relaxed text-slate-600">{gradedCodeResult.feedback}</p>
+                                </div>
+
+                                <div className="p-5 bg-blue-600/10 border border-blue-100 rounded-3xl relative overflow-hidden group">
+                                  <h5 className="text-[9px] font-black text-blue-600 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                                    <Sparkles className="w-3.5 h-3.5 fill-blue-500 animate-pulse" /> Optimization Tip
+                                  </h5>
+                                  <p className="text-xs font-bold text-blue-800 leading-relaxed italic">"{gradedCodeResult.optimizationTip}"</p>
+                                </div>
+                              </Card>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                </div>
             </div>
           )}

@@ -70,6 +70,25 @@ function getMockData(prompt: string) {
         roleFit: 8,
         productionReadiness: 9
       },
+      psychometrics: [
+        { subject: 'Critical Thinking', value: 88 },
+        { subject: 'Stress Tolerance', value: 72 },
+        { subject: 'Collaboration', value: 85 },
+        { subject: 'Growth Mindset', value: 90 },
+        { subject: 'Leadership', value: 78 }
+      ],
+      salaryBenchmark: {
+        low: 110000,
+        median: 145000,
+        high: 180000
+      },
+      credibilityReport: {
+        veracityScore: 84,
+        inconsistencyRatio: 12,
+        suspicionIndex: 8,
+        vagueClaimsCount: 1,
+        alerts: ["Lacks explicit evidence for food delivery scale (claims 1M orders)"]
+      },
       finalRecommendation: "Strong Hire"
     };
   }
@@ -127,6 +146,30 @@ function getMockData(prompt: string) {
           weaknesses: ["No modern software development experience", "Lacks technical fundamentals"],
           riskLevel: "High",
           recommendedAction: "Reject"
+        }
+      ]
+    };
+  }
+
+  if (prompt.includes("Analyze the following resume claims")) {
+    return {
+      veracityScore: 78,
+      suspiciousClaims: [
+        {
+          claim: "Optimized PostgreSQL indexing for 10M+ daily active users, resulting in 99.9% query latency reduction.",
+          reason: "A 99.9% query latency reduction is statistically highly improbable using only indexing optimizations unless the queries were severely broken. The scale of 10M+ DAU is also mismatched with the size of the team mentioned.",
+          verificationQuestion: "Can you walk me through the specific tools you used to profile the PostgreSQL query planner, and what exact indices (e.g., partial, expression-based) were added to achieve this reduction?"
+        },
+        {
+          claim: "Re-architected monolithic backend into microservices on AWS, handling billions of concurrent requests.",
+          reason: "Handling billions of 'concurrent' requests would exceed the capacity of most major global tech systems. It is likely the candidate meant 'total' requests rather than concurrent ones.",
+          verificationQuestion: "How did you manage distributed transactions and state consistency across microservices, and how did you load test the system to handle 'billions' of concurrent requests?"
+        }
+      ],
+      strongClaims: [
+        {
+          claim: "Migrated legacy frontend to Next.js 14, reducing overall initial bundle size by 42%.",
+          reason: "This is a highly credible, specific, and standard optimization achievement with Next.js code-splitting and server components."
         }
       ]
     };
