@@ -122,7 +122,7 @@ export default function PricingPage() {
             </div>
 
             <Link 
-              href={plan.name === 'Free' ? '/dashboard' : '/signup'}
+              href={plan.name === 'Free' ? '/dashboard' : `/checkout?plan=${plan.name.toLowerCase()}`}
               className={cn(
                 "w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all",
                 plan.highlight 
